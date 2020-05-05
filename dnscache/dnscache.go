@@ -13,7 +13,7 @@ type DNSCache struct {
 
 //Start - starts a new DNS cache
 func (c *DNSCache) Start() {
-	c.cache = cache.New(5*time.Minute, 10*time.Minute)
+	c.cache = cache.New(10*time.Second, 20*time.Second)
 }
 
 //Set - Sets a new DNS record

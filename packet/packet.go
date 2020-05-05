@@ -3,10 +3,10 @@ package packet
 //Packet - valuable bits from a packet
 type Packet struct {
 	Interface string `json:"interface"`
-	Bytes     int    `json:"bytes"`
-	SrcIP     string `json:"src_ip"`
-	DstIP     string `json:"dst_ip"`
+	Bytes     int    `json:"bytes,string,omitempty"`
+	SrcName   string `json:"src_name"`
+	DstName   string `json:"dst_name"`
 	Proto     string `json:"proto"`
-	SrcPort   int    `json:"scr_port"`
-	DstPort   int    `json:"dst_port"`
+	SrcPort   int    `json:"scr_port,string,omitempty"`
+	DstPort   int    `json:"dst_port,string,omitempty"`
 }

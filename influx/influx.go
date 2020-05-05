@@ -1,14 +1,11 @@
 package influx
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
-	"strconv"
-	"strings"
 	"time"
-
-	"github.com/fatih/structs"
 
 	"github.com/jrcichra/influx-network-traffic/packet"
 
@@ -40,32 +37,33 @@ func (f *Influx) Connect(host, port, username, password string) {
 }
 
 //Write - writes just as the script does
-func (f *Influx) Write(measurement string, packet packet.Packet) (*client.Response, error) {
-	fmt.Println("Inserting data...")
+func (f *Influx) Write(measurement string, packet packet.Packet, interval time.Duration, t time.Time) (*client.Response, error) {
+	log.Println("Inserting data...")
 
-	//Convert struct to map
-	m := structs.Map(packet)
-	//make everything in here a string
-	m2 := make(map[string]string)
-	for k, v := range m {
-		switch temp := v.(type) {
-		case string:
-			m2[strings.ToLower(k)] = strings.ToLower(temp)
-		case int:
-			m2[strings.ToLower(k)] = strconv.Itoa(temp)
-		}
+	//Convert struct to JSON so we get the keys we want
+	jsonB, err := json.Marshal(packet)
+	if err != nil {
+		panic(err)
+	}
+
+	//Convert it into a map[string][string] for the tags
+	var m map[string]string
+	err = json.Unmarshal(jsonB, &m)
+	if err != nil {
+		panic(err)
 	}
 
 	//Remove bytes as it's not a tag but a field (the only one)
-	delete(m, "Bytes")
+	delete(m, "bytes")
 
 	pt := client.Point{
 		Measurement: "throughput",
-		Tags:        m2,
+		Tags:        m,
 		Fields: map[string]interface{}{
 			"throughput": packet.Bytes,
+			"interval":   int(interval.Seconds()),
 		},
-		Time: time.Now(),
+		Time: t,
 	}
 
 	pts := make([]client.Point, 1)
@@ -76,6 +74,7 @@ func (f *Influx) Write(measurement string, packet packet.Packet) (*client.Respon
 		Database:        "netmetrics",
 		RetentionPolicy: "autogen",
 	}
-	fmt.Println(f.client.Write(bps))
-	return nil, nil
+
+	// Return back the write error
+	return f.client.Write(bps)
 }

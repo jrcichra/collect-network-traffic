@@ -3,6 +3,8 @@ package aggregator
 import (
 	"time"
 
+	"github.com/jrcichra/influx-network-traffic/network"
+
 	"github.com/jrcichra/influx-network-traffic/influx"
 
 	"github.com/jrcichra/influx-network-traffic/packet"
@@ -13,6 +15,7 @@ type Aggregator struct {
 	interval     time.Duration
 	packetBuffer map[string]packet.Packet
 	influxdb     influx.Influx
+	networkUtils network.Network
 }
 
 func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Packet]int) {
@@ -22,17 +25,22 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 	packets := <-response
 	//Put it in the database
 	// spew.Dump(packets)
+	t := time.Now()
 	for p, bytes := range packets {
 		//p is the packet, bytes is the bytes aggregated for this connection/time
 		//Fix up the bytes
 		p.Bytes = bytes
+		//Replace IPs with hostnames
+		p.SrcName = g.networkUtils.GetHostname(p.SrcName)
+		p.DstName = g.networkUtils.GetHostname(p.DstName)
 		//Insert it into influx
-		g.influxdb.Write("throughput", p)
+		g.influxdb.Write("throughput", p, g.interval, t)
 	}
 }
 
 //called as a goroutine that starts an insert
 func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, response chan map[packet.Packet]int) {
+	g.interval = interval
 	ticker := time.NewTicker(interval)
 	for range ticker.C {
 		//we should insert in the database
@@ -44,6 +52,9 @@ func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, 
 func (g *Aggregator) Start(interval time.Duration, packetChan chan packet.Packet) {
 	//Set up the DB
 	g.influxdb.Connect("smarty4", "8086", "pi", "test")
+	//Get a network object for the aggregator (getHostname)
+	g.networkUtils = network.Network{}
+	g.networkUtils.Start()
 	//the timer will request the packet cache on a given interval with no meaningful data
 	request := make(chan struct{})
 	//the response will be a copy of the packet cache for this given interval
