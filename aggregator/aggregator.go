@@ -1,7 +1,6 @@
 package aggregator
 
 import (
-	"log"
 	"time"
 
 	"github.com/jrcichra/influx-network-traffic/network"
@@ -20,7 +19,6 @@ type Aggregator struct {
 }
 
 func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Packet]int) {
-	log.Println("Inserting data")
 	//Request the data
 	request <- struct{}{}
 	//Collect the response
@@ -42,6 +40,7 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 		//Insert it into influx
 		g.influxdb.Write("throughput", p, g.interval, t)
 	}
+	// log.Println("Inserted data to influx")
 	// log.Println("I'm getting", sum/int(g.interval.Seconds()), "bytes per second")
 }
 

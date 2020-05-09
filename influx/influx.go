@@ -15,6 +15,7 @@ import (
 //Connection - details to connect to influx
 type Connection struct {
 	Hostname string
+	Db       string
 	Username string
 	Password string
 	Port     int
@@ -22,11 +23,13 @@ type Connection struct {
 
 //Influx - wrapper to influx client with state
 type Influx struct {
-	client *client.Client
+	client     *client.Client
+	Connection Connection
 }
 
 //Connect - connect to the influx database
 func (f *Influx) Connect(influxConn Connection) {
+	f.Connection = influxConn
 	u, err := url.Parse(fmt.Sprintf("http://%s:%d", influxConn.Hostname, influxConn.Port))
 	if err != nil {
 		log.Fatal(err)
@@ -42,6 +45,8 @@ func (f *Influx) Connect(influxConn Connection) {
 	}
 
 	f.client.SetAuth(influxConn.Username, influxConn.Password)
+
+	log.Println("Connected to influxdb:", influxConn.Hostname, influxConn.Port, "as", influxConn.Username)
 }
 
 //Write - writes just as the script does
@@ -78,7 +83,7 @@ func (f *Influx) Write(measurement string, packet packet.Packet, interval time.D
 
 	bps := client.BatchPoints{
 		Points:          pts,
-		Database:        "netmetrics",
+		Database:        f.Connection.Db,
 		RetentionPolicy: "autogen",
 	}
 

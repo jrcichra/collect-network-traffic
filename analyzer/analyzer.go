@@ -27,7 +27,7 @@ func (a *Analyzer) Start(influxConn influx.Connection, interval int, interfaces 
 	a.insertChan = make(chan packet.Packet)
 	//Start up a packet handler for every interface
 	for _, interf := range interfaces {
-		log.Println("Processing traffic for interface", interf)
+		log.Println("Processing traffic for interface", interf, "every", interval, "seconds")
 		go a.handlePackets(interf)
 	}
 	//Spawn an aggregator
