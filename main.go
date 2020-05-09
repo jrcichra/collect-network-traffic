@@ -1,8 +1,17 @@
 package main
 
-import "github.com/jrcichra/influx-network-traffic/analyzer"
+import (
+	"os"
+	"strconv"
+
+	"github.com/jrcichra/influx-network-traffic/analyzer"
+)
 
 func main() {
 	var a analyzer.Analyzer
-	a.Start("wlan0")
+	interval, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	a.Start(interval, "wlan0")
 }

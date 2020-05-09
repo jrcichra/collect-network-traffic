@@ -20,7 +20,7 @@ type Analyzer struct {
 }
 
 //Start - sets up all objects for Analyzing packets and sending to influx
-func (a *Analyzer) Start(interfaces ...string) {
+func (a *Analyzer) Start(interval int, interfaces ...string) {
 	a.insertChan = make(chan packet.Packet)
 	//Start up a packet handler for every interface
 	for _, interf := range interfaces {
@@ -28,7 +28,7 @@ func (a *Analyzer) Start(interfaces ...string) {
 	}
 	//Spawn an aggregator
 	a.aggr = aggregator.Aggregator{}
-	a.aggr.Start(1*time.Second, a.insertChan)
+	a.aggr.Start(time.Duration(interval)*time.Second, a.insertChan)
 }
 
 //handle packets on a given interface

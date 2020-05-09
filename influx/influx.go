@@ -38,7 +38,6 @@ func (f *Influx) Connect(host, port, username, password string) {
 
 //Write - writes just as the script does
 func (f *Influx) Write(measurement string, packet packet.Packet, interval time.Duration, t time.Time) (*client.Response, error) {
-	log.Println("Inserting data...")
 
 	//Convert struct to JSON so we get the keys we want
 	jsonB, err := json.Marshal(packet)

@@ -1,6 +1,7 @@
 package aggregator
 
 import (
+	"log"
 	"time"
 
 	"github.com/jrcichra/influx-network-traffic/network"
@@ -26,25 +27,35 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 	//Put it in the database
 	// spew.Dump(packets)
 	t := time.Now()
+	sum := 0
 	for p, bytes := range packets {
 		//p is the packet, bytes is the bytes aggregated for this connection/time
 		//Fix up the bytes
 		p.Bytes = bytes
+		sum += bytes
+		//Divide the number of bytes by the number of seconds in this interval
+		p.Bytes /= int(g.interval.Seconds())
 		//Replace IPs with hostnames
 		p.SrcName = g.networkUtils.GetHostname(p.SrcName)
 		p.DstName = g.networkUtils.GetHostname(p.DstName)
 		//Insert it into influx
 		g.influxdb.Write("throughput", p, g.interval, t)
 	}
+	log.Println("I'm getting", sum/int(g.interval.Seconds()), "bytes per second")
 }
 
 //called as a goroutine that starts an insert
 func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, response chan map[packet.Packet]int) {
+	log.Println("Making a timer")
 	g.interval = interval
 	ticker := time.NewTicker(interval)
-	for range ticker.C {
-		//we should insert in the database
-		go g.inserter(request, response)
+	for {
+		select {
+		case <-ticker.C:
+			//we should insert in the database
+			go g.inserter(request, response)
+		}
+
 	}
 }
 
