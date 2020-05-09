@@ -12,14 +12,22 @@ import (
 	"github.com/influxdata/influxdb/client"
 )
 
+//Connection - details to connect to influx
+type Connection struct {
+	Hostname string
+	Username string
+	Password string
+	Port     int
+}
+
 //Influx - wrapper to influx client with state
 type Influx struct {
 	client *client.Client
 }
 
 //Connect - connect to the influx database
-func (f *Influx) Connect(host, port, username, password string) {
-	u, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
+func (f *Influx) Connect(influxConn Connection) {
+	u, err := url.Parse(fmt.Sprintf("http://%s:%d", influxConn.Hostname, influxConn.Port))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +41,7 @@ func (f *Influx) Connect(host, port, username, password string) {
 		log.Fatal(err)
 	}
 
-	f.client.SetAuth(username, password)
+	f.client.SetAuth(influxConn.Username, influxConn.Password)
 }
 
 //Write - writes just as the script does

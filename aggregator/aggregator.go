@@ -20,6 +20,7 @@ type Aggregator struct {
 }
 
 func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Packet]int) {
+	log.Println("Inserting data")
 	//Request the data
 	request <- struct{}{}
 	//Collect the response
@@ -41,12 +42,11 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 		//Insert it into influx
 		g.influxdb.Write("throughput", p, g.interval, t)
 	}
-	log.Println("I'm getting", sum/int(g.interval.Seconds()), "bytes per second")
+	// log.Println("I'm getting", sum/int(g.interval.Seconds()), "bytes per second")
 }
 
 //called as a goroutine that starts an insert
 func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, response chan map[packet.Packet]int) {
-	log.Println("Making a timer")
 	g.interval = interval
 	ticker := time.NewTicker(interval)
 	for {
@@ -60,9 +60,9 @@ func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, 
 }
 
 //Start - takes an aggregation interval and a channel of packets to aggregate
-func (g *Aggregator) Start(interval time.Duration, packetChan chan packet.Packet) {
+func (g *Aggregator) Start(interval time.Duration, packetChan chan packet.Packet, influxConn influx.Connection) {
 	//Set up the DB
-	g.influxdb.Connect("smarty4", "8086", "pi", "test")
+	g.influxdb.Connect(influxConn)
 	//Get a network object for the aggregator (getHostname)
 	g.networkUtils = network.Network{}
 	g.networkUtils.Start()

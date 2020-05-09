@@ -1,8 +1,11 @@
 package analyzer
 
 import (
+	"log"
 	"strconv"
 	"time"
+
+	"github.com/jrcichra/influx-network-traffic/influx"
 
 	"github.com/jrcichra/influx-network-traffic/aggregator"
 
@@ -20,15 +23,16 @@ type Analyzer struct {
 }
 
 //Start - sets up all objects for Analyzing packets and sending to influx
-func (a *Analyzer) Start(interval int, interfaces ...string) {
+func (a *Analyzer) Start(influxConn influx.Connection, interval int, interfaces ...string) {
 	a.insertChan = make(chan packet.Packet)
 	//Start up a packet handler for every interface
 	for _, interf := range interfaces {
+		log.Println("Processing traffic for interface", interf)
 		go a.handlePackets(interf)
 	}
 	//Spawn an aggregator
 	a.aggr = aggregator.Aggregator{}
-	a.aggr.Start(time.Duration(interval)*time.Second, a.insertChan)
+	a.aggr.Start(time.Duration(interval)*time.Second, a.insertChan, influxConn)
 }
 
 //handle packets on a given interface
