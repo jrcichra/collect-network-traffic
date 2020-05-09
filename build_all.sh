@@ -2,7 +2,7 @@ package="influx-network-traffic"
 package_split=(${package//\// })
 package_name=${package_split[-1]}
 # platforms=("windows/amd64" "windows/386" "linux/amd64" "linux/arm" "linux/arm64")
-platforms=("linux/amd64" "linux/arm" "linux/arm64")
+platforms=("linux/amd64")
 for platform in "${platforms[@]}"
 do
     platform_split=(${platform//\// })
