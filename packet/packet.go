@@ -6,6 +6,7 @@ type Packet struct {
 	Bytes     int    `json:"bytes,string,omitempty"`
 	SrcName   string `json:"src_name"`
 	DstName   string `json:"dst_name"`
+	Hostname  string `json:"hostname"`
 	Proto     string `json:"proto"`
 	SrcPort   int    `json:"scr_port,string,omitempty"`
 	DstPort   int    `json:"dst_port,string,omitempty"`
