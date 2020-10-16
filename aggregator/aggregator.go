@@ -1,7 +1,6 @@
 package aggregator
 
 import (
-	"os"
 	"time"
 
 	"github.com/jrcichra/influx-network-traffic/network"
@@ -38,8 +37,6 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 		//Replace IPs with hostnames
 		p.SrcName = g.networkUtils.GetHostname(p.SrcName)
 		p.DstName = g.networkUtils.GetHostname(p.DstName)
-		//hostname of the system we're collecting on
-		p.Hostname, _ = os.Hostname()
 		//Insert it into influx
 		g.influxdb.Write("throughput", p, g.interval, t)
 	}

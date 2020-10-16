@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -58,6 +59,8 @@ func (a *Analyzer) handlePackets(interf string) {
 			proto := ip.Protocol.String()
 			srcPort := 0
 			dstPort := 0
+			//hostname
+			hostname, _ := os.Hostname()
 			// Check if it's TCP/UDP to get more data
 			if tcpLayer := p.Layer(layers.LayerTypeTCP); tcpLayer != nil {
 				tcp, _ := tcpLayer.(*layers.TCP)
@@ -68,7 +71,7 @@ func (a *Analyzer) handlePackets(interf string) {
 				srcPort, _ = strconv.Atoi(udp.SrcPort.String())
 				dstPort, _ = strconv.Atoi(udp.DstPort.String())
 			}
-			pack := packet.Packet{interf, bytes, src, dst, proto, srcPort, dstPort}
+			pack := packet.Packet{interf, bytes, src, dst, hostname, proto, srcPort, dstPort}
 			//Send this packet off for further processing
 			a.insertChan <- pack
 		} else {
