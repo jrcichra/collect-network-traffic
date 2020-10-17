@@ -8,6 +8,6 @@ type Packet struct {
 	DstName   string `json:"dst_name"`
 	Hostname  string `json:"hostname"`
 	Proto     string `json:"proto"`
-	SrcPort   int    `json:"scr_port,string,omitempty"`
+	SrcPort   int    `json:"src_port,string,omitempty"`
 	DstPort   int    `json:"dst_port,string,omitempty"`
 }
