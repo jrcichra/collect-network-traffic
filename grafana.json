@@ -15,7 +15,8 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 40,
+    "id": 52,
+    "iteration": 1602891569926,
     "links": [],
     "panels": [
         {
@@ -23,7 +24,14 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "NetMetrics",
+            "datasource": "NetMetrics Cloud",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {},
+                    "links": []
+                },
+                "overrides": []
+            },
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
@@ -48,14 +56,21 @@
             "lines": true,
             "linewidth": 1,
             "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
             "percentage": false,
+            "pluginVersion": "7.1.0",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [
+                {
+                    "alias": "throughput.incoming",
+                    "color": "#1F60C4"
+                },
+                {
+                    "alias": "throughput.outgoing",
+                    "color": "#C4162A"
+                }
+            ],
             "spaceLength": 10,
             "stack": false,
             "steppedLine": false,
@@ -100,14 +115,26 @@
                             }
                         ]
                     ],
-                    "tags": []
+                    "tags": [
+                        {
+                            "key": "interface",
+                            "operator": "=~",
+                            "value": "/^$interface$/"
+                        },
+                        {
+                            "condition": "AND",
+                            "key": "hostname",
+                            "operator": "=~",
+                            "value": "/^$hostname$/"
+                        }
+                    ]
                 }
             ],
             "thresholds": [],
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Throughput over Time",
+            "title": "Throughput over Time ($interface)",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -149,7 +176,15 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "NetMetrics",
+            "datasource": "NetMetrics Cloud",
+            "description": "",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {},
+                    "links": []
+                },
+                "overrides": []
+            },
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
@@ -164,20 +199,18 @@
                 "alignAsTable": true,
                 "avg": false,
                 "current": false,
-                "max": false,
+                "max": true,
                 "min": false,
                 "rightSide": true,
                 "show": false,
                 "total": false,
-                "values": false
+                "values": true
             },
             "lines": true,
             "linewidth": 1,
             "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
             "percentage": false,
+            "pluginVersion": "7.1.0",
             "pointradius": 2,
             "points": false,
             "renderer": "flot",
@@ -193,6 +226,12 @@
                                 "1s"
                             ],
                             "type": "time"
+                        },
+                        {
+                            "params": [
+                                "src_name"
+                            ],
+                            "type": "tag"
                         },
                         {
                             "params": [
@@ -224,17 +263,29 @@
                             }
                         ]
                     ],
-                    "tags": []
+                    "tags": [
+                        {
+                            "key": "interface",
+                            "operator": "=~",
+                            "value": "/^$interface$/"
+                        },
+                        {
+                            "condition": "AND",
+                            "key": "hostname",
+                            "operator": "=~",
+                            "value": "/^$hostname$/"
+                        }
+                    ]
                 }
             ],
             "thresholds": [],
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Total Usage",
+            "title": "Total Usage ($interface)",
             "tooltip": {
                 "shared": true,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
             },
             "type": "graph",
@@ -267,23 +318,237 @@
                 "align": false,
                 "alignLevel": null
             }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "NetMetrics Cloud",
+            "description": "",
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {},
+                    "links": []
+                },
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 9
+            },
+            "hiddenSeries": false,
+            "id": 5,
+            "legend": {
+                "alignAsTable": true,
+                "avg": false,
+                "current": true,
+                "max": false,
+                "min": false,
+                "rightSide": true,
+                "show": true,
+                "sort": "current",
+                "sortDesc": true,
+                "total": false,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "percentage": false,
+            "pluginVersion": "7.1.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+                {
+                    "alias": "throughput.incoming",
+                    "color": "#1F60C4"
+                },
+                {
+                    "alias": "throughput.outgoing",
+                    "color": "#C4162A"
+                }
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "groupBy": [
+                        {
+                            "params": [
+                                "$__interval"
+                            ],
+                            "type": "time"
+                        },
+                        {
+                            "params": [
+                                "dst_name"
+                            ],
+                            "type": "tag"
+                        },
+                        {
+                            "params": [
+                                "none"
+                            ],
+                            "type": "fill"
+                        }
+                    ],
+                    "measurement": "throughput",
+                    "orderByTime": "ASC",
+                    "policy": "default",
+                    "refId": "A",
+                    "resultFormat": "time_series",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "throughput"
+                                ],
+                                "type": "field"
+                            },
+                            {
+                                "params": [],
+                                "type": "sum"
+                            },
+                            {
+                                "params": [
+                                    "*8"
+                                ],
+                                "type": "math"
+                            }
+                        ]
+                    ],
+                    "tags": [
+                        {
+                            "key": "interface",
+                            "operator": "=~",
+                            "value": "/^$interface$/"
+                        },
+                        {
+                            "condition": "AND",
+                            "key": "hostname",
+                            "operator": "=~",
+                            "value": "/^$hostname$/"
+                        }
+                    ]
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "Places over time ($interface)",
+            "tooltip": {
+                "shared": true,
+                "sort": 2,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "bps",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
         }
     ],
     "refresh": "10s",
-    "schemaVersion": 21,
+    "schemaVersion": 26,
     "style": "dark",
-    "tags": [],
+    "tags": [
+        "metrics"
+    ],
     "templating": {
-        "list": []
+        "list": [
+            {
+                "allValue": null,
+                "current": {
+                    "selected": true,
+                    "text": "ens3",
+                    "value": "ens3"
+                },
+                "datasource": "NetMetrics Cloud",
+                "definition": "SHOW TAG VALUES on netmetrics with key in (\"interface\")",
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "interface",
+                "options": [],
+                "query": "SHOW TAG VALUES on netmetrics with key in (\"interface\")",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "selected": true,
+                    "text": "justinovh",
+                    "value": "justinovh"
+                },
+                "datasource": "NetMetrics Cloud",
+                "definition": "SHOW TAG VALUES on netmetrics with key in (\"hostname\")",
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "hostname",
+                "options": [],
+                "query": "SHOW TAG VALUES on netmetrics with key in (\"hostname\")",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+            }
+        ]
     },
     "time": {
-        "from": "now-5m",
+        "from": "now-1h",
         "to": "now"
     },
     "timepicker": {
         "refresh_intervals": [
-            "1s",
-            "5s",
             "10s",
             "30s",
             "1m",
@@ -296,7 +561,7 @@
         ]
     },
     "timezone": "",
-    "title": "NetMetrics",
-    "uid": "047pzoZgk",
-    "version": 6
+    "title": "NetMetrics Cloud",
+    "uid": "KJtYprRgz",
+    "version": 10
 }
