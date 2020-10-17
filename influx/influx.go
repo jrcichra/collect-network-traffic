@@ -65,8 +65,15 @@ func (f *Influx) Write(measurement string, packet packet.Packet, interval time.D
 		panic(err)
 	}
 
-	//Remove bytes as it's not a tag but a field (the only one)
+	//Remove bytes
 	delete(m, "bytes")
+	//Extract out things that shouldn't be tags, but should be fields
+	dstPort := m["dst_port"]
+	delete(m, "dst_port")
+	srcPort := m["src_port"]
+	delete(m, "src_port")
+	proto := m["proto"]
+	delete(m, "proto")
 
 	pt := client.Point{
 		Measurement: "throughput",
@@ -74,6 +81,9 @@ func (f *Influx) Write(measurement string, packet packet.Packet, interval time.D
 		Fields: map[string]interface{}{
 			"throughput": packet.Bytes,
 			"interval":   int(interval.Seconds()),
+			"dst_port":   dstPort,
+			"src_port":   srcPort,
+			"proto":      proto,
 		},
 		Time: t,
 	}
