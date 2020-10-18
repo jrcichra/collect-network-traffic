@@ -24,10 +24,12 @@ spec:
         # remove it if your masters can't run pods
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+      hostNetwork: true
       containers:
         - name: influx-network-traffic
           image: jrcichra/influx-network-traffic
-          privileged: true
+          securityContext:
+            privileged: true
           command:
             [
               "./influx-network-traffic",
@@ -36,7 +38,7 @@ spec:
               "-interval",
               "10",
               "-hostname",
-              "influxdb.influxdb:8086",
+              "127.0.0.1",
               "-username",
               "admin",
               "-password",
@@ -48,4 +50,4 @@ spec:
             - name: NODE_NAME
               valueFrom:
                 fieldRef:
-                  fieldPath: spec.nodeNam
+                  fieldPath: spec.nodeName
