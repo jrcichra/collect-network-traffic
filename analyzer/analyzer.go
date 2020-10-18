@@ -43,6 +43,13 @@ func (a *Analyzer) handlePackets(interf string) {
 		panic(err)
 	}
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+
+	//hostname (check if we're in kubernetes)
+	hostname := os.Getenv("NODE_NAME")
+	if hostname == "" {
+		hostname, _ = os.Hostname()
+	}
+
 	// Loop through the packet stream from the above interface
 	for p := range packetSource.Packets() {
 		//Make sure it's an IPV4 packet
@@ -59,8 +66,7 @@ func (a *Analyzer) handlePackets(interf string) {
 			proto := ip.Protocol.String()
 			srcPort := 0
 			dstPort := 0
-			//hostname
-			hostname, _ := os.Hostname()
+
 			// Check if it's TCP/UDP to get more data
 			if tcpLayer := p.Layer(layers.LayerTypeTCP); tcpLayer != nil {
 				tcp, _ := tcpLayer.(*layers.TCP)
