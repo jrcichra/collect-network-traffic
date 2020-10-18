@@ -1,4 +1,4 @@
-FROM go:1.1.5.3-alpine3.12 as builder
+FROM golang:1.1.5.3-alpine3.12 as builder
 WORKDIR /app
 RUN apk add libpcap-dev
 COPY . .
