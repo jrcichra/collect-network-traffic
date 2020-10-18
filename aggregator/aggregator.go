@@ -26,12 +26,12 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 	//Put it in the database
 	// spew.Dump(packets)
 	t := time.Now()
-	sum := 0
+	// sum := 0
 	for p, bytes := range packets {
 		//p is the packet, bytes is the bytes aggregated for this connection/time
 		//Fix up the bytes
 		p.Bytes = bytes
-		sum += bytes
+		// sum += bytes
 		//Divide the number of bytes by the number of seconds in this interval
 		p.Bytes /= int(g.interval.Seconds())
 		//Replace IPs with hostnames

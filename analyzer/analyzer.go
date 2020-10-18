@@ -38,7 +38,7 @@ func (a *Analyzer) Start(influxConn influx.Connection, interval int, interfaces 
 
 //handle packets on a given interface
 func (a *Analyzer) handlePackets(interf string) {
-	handle, err := pcap.OpenLive(interf, 1600, true, pcap.BlockForever)
+	handle, err := pcap.OpenLive(interf, 99999999, true, pcap.BlockForever)
 	if err != nil {
 		panic(err)
 	}
