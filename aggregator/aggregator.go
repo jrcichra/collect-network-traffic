@@ -3,18 +3,18 @@ package aggregator
 import (
 	"time"
 
-	"github.com/jrcichra/influx-network-traffic/network"
+	"github.com/jrcichra/collect-network-traffic/network"
 
-	"github.com/jrcichra/influx-network-traffic/influx"
+	"github.com/jrcichra/collect-network-traffic/mysql"
 
-	"github.com/jrcichra/influx-network-traffic/packet"
+	"github.com/jrcichra/collect-network-traffic/packet"
 )
 
 //Aggregator - takes packets and collects them until they are flushed on an interval
 type Aggregator struct {
 	interval     time.Duration
 	packetBuffer map[string]packet.Packet
-	influxdb     influx.Influx
+	mysql        *mysql.MySQL
 	networkUtils network.Network
 }
 
@@ -24,9 +24,6 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 	//Collect the response
 	packets := <-response
 	//Put it in the database
-	// spew.Dump(packets)
-	t := time.Now()
-	// sum := 0
 	for p, bytes := range packets {
 		//p is the packet, bytes is the bytes aggregated for this connection/time
 		//Fix up the bytes
@@ -37,11 +34,9 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 		//Replace IPs with hostnames
 		p.SrcName = g.networkUtils.GetHostname(p.SrcName)
 		p.DstName = g.networkUtils.GetHostname(p.DstName)
-		//Insert it into influx
-		g.influxdb.Write("throughput", p, g.interval, t)
+		//Insert it into mysql
+		g.mysql.Insert(&p, g.interval)
 	}
-	// log.Println("Inserted data to influx")
-	// log.Println("I'm getting", sum/int(g.interval.Seconds()), "bytes per second")
 }
 
 //called as a goroutine that starts an insert
@@ -59,12 +54,12 @@ func (g *Aggregator) insertTimer(interval time.Duration, request chan struct{}, 
 }
 
 //Start - takes an aggregation interval and a channel of packets to aggregate
-func (g *Aggregator) Start(interval time.Duration, packetChan chan packet.Packet, influxConn influx.Connection) {
-	//Set up the DB
-	g.influxdb.Connect(influxConn)
+func (g *Aggregator) Start(interval time.Duration, packetChan chan packet.Packet, m *mysql.MySQL) {
 	//Get a network object for the aggregator (getHostname)
 	g.networkUtils = network.Network{}
 	g.networkUtils.Start()
+	//give this object the mysql struct
+	g.mysql = m
 	//the timer will request the packet cache on a given interval with no meaningful data
 	request := make(chan struct{})
 	//the response will be a copy of the packet cache for this given interval

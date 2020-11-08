@@ -6,5 +6,5 @@ RUN go build
 FROM alpine:3.12
 WORKDIR     /app
 RUN apk add libpcap
-COPY --from=builder /app/influx-network-traffic .
-CMD ./influx-network-traffic
+COPY --from=builder /app/collect-network-traffic .
+CMD ./collect-network-traffic

@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: influx-network-traffic
+  name: collect-network-traffic
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: influx-network-traffic
-  namespace: influx-network-traffic
+  name: collect-network-traffic
+  namespace: collect-network-traffic
   labels:
-    k8s-app: influx-network-traffic
+    k8s-app: collect-network-traffic
 spec:
   selector:
     matchLabels:
-      name: influx-network-traffic
+      name: collect-network-traffic
   template:
     metadata:
       labels:
-        name: influx-network-traffic
+        name: collect-network-traffic
     spec:
       tolerations:
         # this toleration is to have the daemonset runnable on master nodes
@@ -26,13 +26,13 @@ spec:
           effect: NoSchedule
       hostNetwork: true
       containers:
-        - name: influx-network-traffic
-          image: jrcichra/influx-network-traffic
+        - name: collect-network-traffic
+          image: jrcichra/collect-network-traffic
           securityContext:
             privileged: true
           command:
             [
-              "./influx-network-traffic",
+              "./collect-network-traffic",
               "-interfaces",
               "ens3,wg0",
               "-interval",
