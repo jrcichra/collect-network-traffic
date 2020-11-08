@@ -27,7 +27,7 @@ spec:
       hostNetwork: true
       containers:
         - name: collect-network-traffic
-          image: jrcichra/collect-network-traffic
+          image: jrcichra/collect-network-traffic:mysql
           securityContext:
             privileged: true
           command:
@@ -37,14 +37,8 @@ spec:
               "ens3,wg0",
               "-interval",
               "10",
-              "-hostname",
-              "127.0.0.1",
-              "-username",
-              "admin",
-              "-password",
-              "admin",
-              "-db",
-              "netmetrics",
+              "-dsn",
+              "'collect:test@tcp(mariadb.mariadb)/collect_network_traffic'",
             ]
           env:
             - name: NODE_NAME
