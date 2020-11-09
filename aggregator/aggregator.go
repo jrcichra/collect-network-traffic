@@ -29,13 +29,14 @@ func (g *Aggregator) inserter(request chan struct{}, response chan map[packet.Pa
 		//Fix up the bytes
 		p.Bytes = bytes
 		// sum += bytes
+		t := time.Now()
 		//Divide the number of bytes by the number of seconds in this interval
 		p.Bytes /= int(g.interval.Seconds())
 		//Replace IPs with hostnames
 		p.SrcName = g.networkUtils.GetHostname(p.SrcName)
 		p.DstName = g.networkUtils.GetHostname(p.DstName)
 		//Insert it into mysql
-		g.mysql.Insert(&p, g.interval)
+		g.mysql.Insert(&p, g.interval, t)
 	}
 }
 

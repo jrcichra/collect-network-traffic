@@ -35,7 +35,7 @@ func (m *MySQL) ConnectToDB(dsn *string) error {
 		err = m.client.Ping()
 	}
 	// prepare the sole query
-	m.stmt, err = m.client.Prepare("insert throughput set interface = ?, bytes = ?, src_name = ?, dst_name = ?, hostname = ?, proto = ?, src_port = ?, dst_port = ?, `interval` = ?")
+	m.stmt, err = m.client.Prepare("insert throughput set interface = ?, bytes = ?, src_name = ?, dst_name = ?, hostname = ?, proto = ?, src_port = ?, dst_port = ?, `interval` = ?, `date` = ?")
 	if err != nil {
 		log.Println(err)
 		//reconnect to the db
@@ -52,7 +52,7 @@ func (m *MySQL) ReconnectToDB(dsn *string) {
 	for err == nil {
 		err = m.ConnectToDB(dsn)
 		// prepare the sole query
-		m.stmt, err = m.client.Prepare("insert throughput set interface = ?, bytes = ?, src_name = ?, dst_name = ?, hostname = ?, proto = ?, src_port = ?, dst_port = ?, `interval` = ?")
+		m.stmt, err = m.client.Prepare("insert throughput set interface = ?, bytes = ?, src_name = ?, dst_name = ?, hostname = ?, proto = ?, src_port = ?, dst_port = ?, `interval` = ?, `date` = ?")
 		if err != nil {
 			log.Println(err)
 			m.client.Close()
@@ -63,8 +63,8 @@ func (m *MySQL) ReconnectToDB(dsn *string) {
 }
 
 //Insert - inserts row into database
-func (m *MySQL) Insert(p *packet.Packet, interval time.Duration) {
-	_, err := m.stmt.Exec(p.Interface, p.Bytes, p.SrcName, p.DstName, p.Hostname, p.Proto, p.SrcPort, p.DstPort, int(interval.Seconds()))
+func (m *MySQL) Insert(p *packet.Packet, interval time.Duration, t time.Time) {
+	_, err := m.stmt.Exec(p.Interface, p.Bytes, p.SrcName, p.DstName, p.Hostname, p.Proto, p.SrcPort, p.DstPort, int(interval.Seconds()), t)
 	if err != nil {
 		panic(err)
 	}
