@@ -14,6 +14,21 @@ create table collect_network_traffic.throughput(
 	`interval` int not null
 );
 
+CREATE INDEX throughput_date_IDX USING BTREE ON collect_network_traffic.throughput (`date`);
+CREATE INDEX throughput_hostname_IDX USING BTREE ON collect_network_traffic.throughput (hostname);
+CREATE INDEX throughput_interface_IDX USING BTREE ON collect_network_traffic.throughput (interface);
+
+
+create user 'collect'@'%' identified by 'test';
+
+grant all on collect_network_traffic.throughput to 'collect'@'%';
+
+CREATE EVENT collect_network_traffic.auto_delete
+ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 DAY 
+ON COMPLETION PRESERVE
+DO 
+DELETE LOW_PRIORITY FROM collect_network_traffic.throughput WHERE datetime < DATE_SUB(NOW(), INTERVAL 7 DAY);
+
 create user 'collect'@'%' identified by 'test';
 
 grant all on collect_network_traffic.throughput to 'collect'@'%';
