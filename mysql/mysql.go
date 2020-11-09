@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/jrcichra/collect-network-traffic/packet"
 
 	"database/sql"
@@ -66,6 +68,8 @@ func (m *MySQL) ReconnectToDB(dsn *string) {
 func (m *MySQL) Insert(p *packet.Packet, interval time.Duration, t time.Time) {
 	_, err := m.stmt.Exec(p.Interface, p.Bytes, p.SrcName, p.DstName, p.Hostname, p.Proto, p.SrcPort, p.DstPort, int(interval.Seconds()), t)
 	if err != nil {
-		panic(err)
+		log.Println("sql err:", err)
+		log.Println("Time:", t.Unix())
+		spew.Dump(p)
 	}
 }

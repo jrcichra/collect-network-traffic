@@ -3,6 +3,7 @@ module github.com/jrcichra/collect-network-traffic
 go 1.14
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/google/gopacket v1.1.17
 	github.com/patrickmn/go-cache v2.1.0+incompatible
