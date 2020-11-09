@@ -7,19 +7,13 @@ Store network traffic information in mysql
 ```bash
 Usage of ./collect-network-traffic:
   -db string
-        db in mysql (default "netmetrics")
-  -hostname string
-        hostname/ip of the mysql (default "localhost")
+        db in mysql (default "collect_network_traffic")
+  -dsn string
+        mysql dsn
   -interfaces string
         comma separated list of interfaces to listen on
   -interval int
         Interval you want to capture each interface with (default 60)
-  -password string
-        mysql password
-  -port int
-        mysql port (default 8086)
-  -username string
-        mysql username
 ```
 
 # Getting started
