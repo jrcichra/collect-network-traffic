@@ -3,7 +3,7 @@ package network
 import (
 	"net"
 
-	"github.com/jrcichra/influx-network-traffic/dnscache"
+	"github.com/jrcichra/collect-network-traffic/dnscache"
 )
 
 //Network -

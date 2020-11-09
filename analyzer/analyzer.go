@@ -6,11 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jrcichra/influx-network-traffic/influx"
+	"github.com/jrcichra/collect-network-traffic/aggregator"
+	"github.com/jrcichra/collect-network-traffic/mysql"
 
-	"github.com/jrcichra/influx-network-traffic/aggregator"
-
-	"github.com/jrcichra/influx-network-traffic/packet"
+	"github.com/jrcichra/collect-network-traffic/packet"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -23,8 +22,8 @@ type Analyzer struct {
 	aggr       aggregator.Aggregator
 }
 
-//Start - sets up all objects for Analyzing packets and sending to influx
-func (a *Analyzer) Start(influxConn influx.Connection, interval int, interfaces ...string) {
+//Start - sets up all objects for Analyzing packets and sending to mysql
+func (a *Analyzer) Start(m *mysql.MySQL, interval int, interfaces ...string) {
 	a.insertChan = make(chan packet.Packet)
 	//Start up a packet handler for every interface
 	for _, interf := range interfaces {
@@ -33,7 +32,7 @@ func (a *Analyzer) Start(influxConn influx.Connection, interval int, interfaces 
 	}
 	//Spawn an aggregator
 	a.aggr = aggregator.Aggregator{}
-	a.aggr.Start(time.Duration(interval)*time.Second, a.insertChan, influxConn)
+	a.aggr.Start(time.Duration(interval)*time.Second, a.insertChan, m)
 }
 
 //handle packets on a given interface
