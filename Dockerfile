@@ -5,6 +5,6 @@ COPY . .
 RUN go build
 FROM alpine:3.12
 WORKDIR     /app
-RUN apk add libpcap
+RUN apk add libpcap tzdata
 COPY --from=builder /app/collect-network-traffic .
 CMD ./collect-network-traffic
