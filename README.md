@@ -1,4 +1,7 @@
 # collect-network-traffic
+
+(Depricated, I'm using Prometheus Node Exporter instead)
+
 Store network traffic information in mysql
 
 ![Preview](preview.png "Preview")
